@@ -1,0 +1,26 @@
+name: My First Flask CI
+
+# 1. When should this run? (Every time you push code)
+on: [push]
+
+# 2. What should it do?
+jobs:
+  run-my-tests:
+    runs-on: ubuntu-latest  # Use a free Linux computer from GitHub
+
+    steps:
+      # Step A: Copy your code into the Linux computer
+      - uses: actions/checkout@v4
+
+      # Step B: Set up Python
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      # Step C: Install only what is needed for your project
+      - name: Install Flask and Pytest
+        run: pip install flask pytest
+
+      # Step D: Run your specific test file
+      - name: Run my test cases
+        run: pytest test_app.py
