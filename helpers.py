@@ -1,5 +1,6 @@
 import time
 
+
 def getNetflixMovies(name):
     """
     Yeh function Netflix API ko simulate karta hai.

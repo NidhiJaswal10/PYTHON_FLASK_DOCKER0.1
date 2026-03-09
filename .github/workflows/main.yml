@@ -5,8 +5,22 @@ on:
     branches: [ "master", "main" ]
 
 jobs:
-  # JOB 1: CI (The "Test" Phase)
+  # JOB 1: LINTING (The "Style" Gate)
+  run-linting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install Ruff
+        run: pip install ruff
+      - name: Run Ruff Check
+        run: ruff check .
+
+  # JOB 2: CI (The "Logic" Gate)
   test-logic:
+    needs: run-linting  # Only runs if Linting PASSES
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,19 +34,17 @@ jobs:
       - name: Run Tests
         run: pytest test_app.py
 
-  # JOB 2: CD (The "Deploy" Phase)
+  # JOB 3: CD (The "Deploy" Phase)
   deploy-docker:
-    needs: test-logic  # This makes sure we only deploy if tests PASS
+    needs: test-logic  # Only runs if Tests PASS
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
