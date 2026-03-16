@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, abort, jsonify
+from flask import Flask, render_template, request, abort
 from helpers import getNetflixMovies
 from database import get_db_connection  # Imports your PostgreSQL handshake
 
