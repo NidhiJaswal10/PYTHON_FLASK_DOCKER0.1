@@ -3,10 +3,35 @@
 <head>
     <title>GETPOST METHODS</title>
 </head>
-<form method="post">
-    <input name="name">
-    <button type="submit">Send</button>
+<body>
+    <h1>GET and POST Methods in Flask</h1>
 
-</form>
+    <h3>Submit New Data</h3>
+    <form action="/add-rating" method="post">
+        <input name="movie_name" placeholder="Movie Name" required>
+        <input name="feedback" placeholder="Feedback" required>
+        <button type="submit">Send</button>
+    </form>
+
+    <hr>
+
+    <h3>Current Movie Ratings</h3>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Movie Name</th>
+                <th>Feedback</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for movie in ratings %}
+            <tr>
+                <td>{{ movie[0] }}</td>
+                <td>{{ movie[1] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+Back to <a href="/">Home</a>
 </body>
 </html>
