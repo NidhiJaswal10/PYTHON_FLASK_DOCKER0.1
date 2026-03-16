@@ -1,26 +1,31 @@
-name: Flask CI and CD
+name: Flask DevOps Fortress
 
 on:
   push:
     branches: [ "master", "main" ]
 
 jobs:
-  # JOB 1: LINTING (The "Style" Gate)
-  run-linting:
+  # JOB 1: QUALITY & SECURITY (The "Safe & Clean" Gate)
+  quality-and-security:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-      - name: Install Ruff
-        run: pip install ruff
-      - name: Run Ruff Check
+      - name: Install Quality Tools
+        run: pip install ruff bandit safety
+      - name: Run Ruff Check (Linting)
         run: ruff check .
+      - name: Run Bandit (Security Scan)
+        run: bandit -r . -ll
+      - name: Run Safety (Dependency Check)
+        # Added "|| true" so it alerts you but doesn't kill the build if a library has a tiny warning
+        run: safety check -r requirements.txt || true
 
   # JOB 2: CI (The "Logic" Gate)
   test-logic:
-    needs: run-linting  # Only runs if Linting PASSES
+    needs: quality-and-security  # Only runs if Security/Linting PASSES
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +34,8 @@ jobs:
           python-version: '3.10'
       - name: Install dependencies
         run: |
-          pip install flask pytest
+          # Added psycopg2-binary here so tests don't crash
+          pip install flask pytest psycopg2-binary
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Run Tests
         run: pytest test_app.py
